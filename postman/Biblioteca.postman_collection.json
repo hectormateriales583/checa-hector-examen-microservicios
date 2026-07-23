@@ -1,0 +1,181 @@
+{
+	"info": {
+		"_postman_id": "b1a2b3c4-d5e6-7f8a-9b0c-1d2e3f4a5b6c",
+		"name": "Biblioteca Microservicios - Examen Práctico",
+		"description": "Colección oficial para validar los 9 escenarios de prueba obligatorios a través del Gateway o directamente en los servicios.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. GET /api/v1/libros (Listar ejemplares sembrados)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/libros",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "v1", "libros"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. GET /api/v1/socios (Listar socios sembrados)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/socios",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "v1", "socios"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3. POST /api/v1/prestamos (Ejemplar disponible + Socio activo -> REGISTRADA)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"codigoEjemplar\": \"BIB-0001\",\n  \"codigoSocio\": \"S001\",\n  \"dias\": 7,\n  \"observaciones\": \"Préstamo regular de prueba\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/prestamos",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "v1", "prestamos"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4. POST /api/v1/prestamos (Mismo ejemplar -> RECHAZADA: No disponible)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"codigoEjemplar\": \"BIB-0001\",\n  \"codigoSocio\": \"S001\",\n  \"dias\": 7\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/prestamos",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "v1", "prestamos"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5. POST /api/v1/prestamos (Socio inactivo -> RECHAZADA: Socio inactivo)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"codigoEjemplar\": \"BIB-0002\",\n  \"codigoSocio\": \"S002\",\n  \"dias\": 7\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/prestamos",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "v1", "prestamos"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6. POST /api/v1/prestamos (Ejemplar inexistente -> RECHAZADA: Ejemplar no existe)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"codigoEjemplar\": \"BIB-9999\",\n  \"codigoSocio\": \"S001\",\n  \"dias\": 7\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/prestamos",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "v1", "prestamos"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "7. POST /api/v1/prestamos/1/devolucion (Devolver préstamo paso 3 -> DEVUELTO)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/prestamos/1/devolucion",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "v1", "prestamos", "1", "devolucion"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "8. POST /api/v1/prestamos/1/devolucion (Repetir devolución -> Conflict 409)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/prestamos/1/devolucion",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "v1", "prestamos", "1", "devolucion"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "9. GET /api/v1/notificaciones (Listar notificaciones generadas)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/notificaciones",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api", "v1", "notificaciones"]
+				}
+			},
+			"response": []
+		}
+	]
+}
