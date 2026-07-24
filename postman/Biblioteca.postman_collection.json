@@ -1,181 +1,377 @@
 {
 	"info": {
 		"_postman_id": "b1a2b3c4-d5e6-7f8a-9b0c-1d2e3f4a5b6c",
-		"name": "Biblioteca Microservicios - Examen Práctico",
-		"description": "Colección oficial para validar los 9 escenarios de prueba obligatorios a través del Gateway o directamente en los servicios.",
+		"name": "Biblioteca - Examen",
+		"description": "Colección oficial del Examen Práctico para el Sistema de Biblioteca con estructura de carpetas exactamente coincidente con la del docente.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "1. GET /api/v1/libros (Listar ejemplares sembrados)",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/api/v1/libros",
-					"protocol": "http",
-					"host": ["localhost"],
-					"port": "8080",
-					"path": ["api", "v1", "libros"]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "2. GET /api/v1/socios (Listar socios sembrados)",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/api/v1/socios",
-					"protocol": "http",
-					"host": ["localhost"],
-					"port": "8080",
-					"path": ["api", "v1", "socios"]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "3. POST /api/v1/prestamos (Ejemplar disponible + Socio activo -> REGISTRADA)",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"codigoEjemplar\": \"BIB-0001\",\n  \"codigoSocio\": \"S001\",\n  \"dias\": 7,\n  \"observaciones\": \"Préstamo regular de prueba\"\n}"
+			"name": "Libros (Ejemplares)",
+			"item": [
+				{
+					"name": "GET Listar Ejemplares",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/libros",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "libros"]
+						},
+						"description": "Lista todos los ejemplares sembrados en la base de datos."
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:8080/api/v1/prestamos",
-					"protocol": "http",
-					"host": ["localhost"],
-					"port": "8080",
-					"path": ["api", "v1", "prestamos"]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "4. POST /api/v1/prestamos (Mismo ejemplar -> RECHAZADA: No disponible)",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"codigoEjemplar\": \"BIB-0001\",\n  \"codigoSocio\": \"S001\",\n  \"dias\": 7\n}"
+				{
+					"name": "GET Obtener Ejemplar por Código",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/libros/BIB-0001",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "libros", "BIB-0001"]
+						}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:8080/api/v1/prestamos",
-					"protocol": "http",
-					"host": ["localhost"],
-					"port": "8080",
-					"path": ["api", "v1", "prestamos"]
+				{
+					"name": "POST Crear Ejemplar Nuevo",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"codigoEjemplar\": \"BIB-0004\",\n  \"titulo\": \"La Ciudad y los Perros\",\n  \"autor\": \"Mario Vargas Llosa\",\n  \"isbn\": \"978-8420471839\",\n  \"anioPublicacion\": 1963,\n  \"disponible\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/libros",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "libros"]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "5. POST /api/v1/prestamos (Socio inactivo -> RECHAZADA: Socio inactivo)",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"codigoEjemplar\": \"BIB-0002\",\n  \"codigoSocio\": \"S002\",\n  \"dias\": 7\n}"
+			"name": "Socios",
+			"item": [
+				{
+					"name": "GET Listar Socios",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/socios",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "socios"]
+						},
+						"description": "Lista todos los socios sembrados (activos e inactivos)."
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:8080/api/v1/prestamos",
-					"protocol": "http",
-					"host": ["localhost"],
-					"port": "8080",
-					"path": ["api", "v1", "prestamos"]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "6. POST /api/v1/prestamos (Ejemplar inexistente -> RECHAZADA: Ejemplar no existe)",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"codigoEjemplar\": \"BIB-9999\",\n  \"codigoSocio\": \"S001\",\n  \"dias\": 7\n}"
+				{
+					"name": "GET Obtener Socio por Código",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/socios/S001",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "socios", "S001"]
+						}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:8080/api/v1/prestamos",
-					"protocol": "http",
-					"host": ["localhost"],
-					"port": "8080",
-					"path": ["api", "v1", "prestamos"]
+				{
+					"name": "POST Registrar Socio Nuevo",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"codigoSocio\": \"S003\",\n  \"nombre\": \"Carlos Mendoza\",\n  \"email\": \"carlos.mendoza@example.com\",\n  \"telefono\": \"955443322\",\n  \"fechaInscripcion\": \"2026-07-01\",\n  \"activo\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/socios",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "socios"]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "7. POST /api/v1/prestamos/1/devolucion (Devolver préstamo paso 3 -> DEVUELTO)",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/api/v1/prestamos/1/devolucion",
-					"protocol": "http",
-					"host": ["localhost"],
-					"port": "8080",
-					"path": ["api", "v1", "prestamos", "1", "devolucion"]
+			"name": "Notificaciones",
+			"item": [
+				{
+					"name": "GET Listar Notificaciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/notificaciones",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "notificaciones"]
+						},
+						"description": "Listar todas las notificaciones generadas en la base de datos de notificaciones."
+					},
+					"response": []
+				},
+				{
+					"name": "POST Enviar Notificación Manual",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"destino\": \"juan.perez@example.com\",\n  \"mensaje\": \"Aviso recordatorio de préstamo de biblioteca\",\n  \"canal\": \"EMAIL\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/notificaciones",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "notificaciones"]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "8. POST /api/v1/prestamos/1/devolucion (Repetir devolución -> Conflict 409)",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/api/v1/prestamos/1/devolucion",
-					"protocol": "http",
-					"host": ["localhost"],
-					"port": "8080",
-					"path": ["api", "v1", "prestamos", "1", "devolucion"]
+			"name": "Prestamos",
+			"item": [
+				{
+					"name": "POST Registrar Préstamo Exitoso (Escenario 3)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"codigoEjemplar\": \"BIB-0001\",\n  \"codigoSocio\": \"S001\",\n  \"dias\": 5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/prestamos",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "prestamos"]
+						},
+						"description": "Registra el préstamo del ejemplar BIB-0001 al socio S001. Retorna 200 OK con estado REGISTRADA."
+					},
+					"response": []
+				},
+				{
+					"name": "POST Préstamo Rechazado - No disponible (Escenario 4)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"codigoEjemplar\": \"BIB-0001\",\n  \"codigoSocio\": \"S001\",\n  \"dias\": 5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/prestamos",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "prestamos"]
+						},
+						"description": "Repite el préstamo del mismo ejemplar no disponible. Retorna 200 OK con estado RECHAZADA y motivo No disponible."
+					},
+					"response": []
+				},
+				{
+					"name": "POST Préstamo Rechazado - Socio inactivo (Escenario 5)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"codigoEjemplar\": \"BIB-0002\",\n  \"codigoSocio\": \"S002\",\n  \"dias\": 5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/prestamos",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "prestamos"]
+						},
+						"description": "Intenta prestar usando el socio S002 (inactivo). Retorna 200 OK con estado RECHAZADA y motivo Socio inactivo."
+					},
+					"response": []
+				},
+				{
+					"name": "POST Préstamo Rechazado - Ejemplar no existe (Escenario 6)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"codigoEjemplar\": \"BIB-9999\",\n  \"codigoSocio\": \"S001\",\n  \"dias\": 5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/prestamos",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "prestamos"]
+						},
+						"description": "Intenta prestar un ejemplar inexistente. Retorna 200 OK con estado RECHAZADA y motivo Ejemplar no existe."
+					},
+					"response": []
+				},
+				{
+					"name": "GET Listar Todos los Préstamos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/prestamos",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "prestamos"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Obtener Préstamo por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/prestamos/1",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "prestamos", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Efectuar Devolución (Escenario 7)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/prestamos/1/devolucion",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "prestamos", "1", "devolucion"]
+						},
+						"description": "Devuelve el préstamo ID 1. Cambia el estado a DEVUELTO y vuelve a poner disponible el ejemplar."
+					},
+					"response": []
+				},
+				{
+					"name": "POST Repetir Devolución - Rechazo 409 (Escenario 8)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/prestamos/1/devolucion",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "prestamos", "1", "devolucion"]
+						},
+						"description": "Repite la devolución del préstamo ID 1. Retorna 409 Conflict."
+					},
+					"response": []
 				}
-			},
-			"response": []
-		},
-		{
-			"name": "9. GET /api/v1/notificaciones (Listar notificaciones generadas)",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/api/v1/notificaciones",
-					"protocol": "http",
-					"host": ["localhost"],
-					"port": "8080",
-					"path": ["api", "v1", "notificaciones"]
-				}
-			},
-			"response": []
+			]
 		}
 	]
 }
