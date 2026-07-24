@@ -34,7 +34,7 @@ jobs:
             -Dsonar.organization=hectormateriales583 \
             -Dsonar.projectKey=hectormateriales583_libros-service \
             -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.exclusions=**/application.yml,**/application*.yml
+            -Dsonar.branch.name=main
 
       - name: Analyze prestamos-service
         env:
@@ -46,7 +46,7 @@ jobs:
             -Dsonar.organization=hectormateriales583 \
             -Dsonar.projectKey=hectormateriales583_prestamos-service \
             -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.exclusions=**/application.yml,**/application*.yml
+            -Dsonar.branch.name=main
 
       - name: Analyze notificaciones-service
         env:
@@ -58,4 +58,4 @@ jobs:
             -Dsonar.organization=hectormateriales583 \
             -Dsonar.projectKey=hectormateriales583_notificaciones-service \
             -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.exclusions=**/application.yml,**/application*.yml
+            -Dsonar.branch.name=main
