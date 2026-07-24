@@ -1,0 +1,237 @@
+{
+  "info": {
+    "_postman_id": "c4a1b2d3-clase4-4e5f-9a11-renieccgateway",
+    "name": "RENIEC · Clase 4 (Gateway con JWT)",
+    "description": "Colección para probar el sistema RENIEC completo a través del api-gateway (con seguridad JWT).\n\nRequiere corriendo: config-server (:8888), eureka-server (:8761), auth-service (:8084), personas-service (:8081), solicitudes-service (:8082), notificaciones-service (:8083) y api-gateway (:8080).\n\nUsa Bearer Auth a nivel de colección (variable {{token}}): corre el login UNA vez y todas las demás requests ya lo traen aplicado.\n\nDNIs sembrados de prueba: 46027897 (JUAN CARLOS PEREZ ROJAS), 10000001.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "host", "value": "localhost", "type": "string" },
+    { "key": "gatewayPort", "value": "8080", "type": "string" },
+    { "key": "usuario", "value": "admin", "type": "string" },
+    { "key": "clave", "value": "admin123", "type": "string" },
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "dni", "value": "46027897", "type": "string" },
+    { "key": "dniAlterno", "value": "10000001", "type": "string" },
+    { "key": "dniInexistente", "value": "99999999", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "0 · Login",
+      "item": [
+        {
+          "name": "Obtener token (admin)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"{{usuario}}\",\n  \"clave\": \"{{clave}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "http://{{host}}:{{gatewayPort}}/api/v1/auth/login",
+              "protocol": "http", "host": ["{{host}}"], "port": "{{gatewayPort}}",
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "description": "Corre esto PRIMERO. El gateway rutea /api/v1/auth/** hacia auth-service (publico, sin token). Guarda el token en la variable de coleccion {{token}}."
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "const data = pm.response.json();",
+              "pm.test('trae token', () => pm.expect(data.token).to.be.a('string'));",
+              "if (data.token) { pm.collectionVariables.set('token', data.token); }"
+            ]}
+          }],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "1 · Flujo completo RENIEC (via gateway)",
+      "description": "El flujo clasico del curso: consultar un DNI, registrar una solicitud (que internamente valida el DNI y notifica), y ver la notificacion generada. Todo entrando por :8080.",
+      "item": [
+        {
+          "name": "1. GET Consultar persona por DNI",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://{{host}}:{{gatewayPort}}/api/v1/personas/{{dni}}",
+              "protocol": "http", "host": ["{{host}}"], "port": "{{gatewayPort}}",
+              "path": ["api", "v1", "personas", "{{dni}}"]
+            },
+            "description": "Gateway -> lb://personas-service. Debe devolver JUAN CARLOS PEREZ ROJAS."
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('status 200', () => pm.response.to.have.status(200));",
+            "pm.test('trae nombres', () => pm.expect(pm.response.json().nombres).to.not.be.undefined);"
+          ]}}],
+          "response": []
+        },
+        {
+          "name": "2. POST Registrar solicitud (flujo completo)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dni\": \"{{dni}}\",\n  \"tipo\": \"MATRICULA\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "http://{{host}}:{{gatewayPort}}/api/v1/solicitudes",
+              "protocol": "http", "host": ["{{host}}"], "port": "{{gatewayPort}}",
+              "path": ["api", "v1", "solicitudes"]
+            },
+            "description": "Gateway -> lb://solicitudes-service, que por dentro llama a personas-service (valida) y a notificaciones-service (avisa)."
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('status 200', () => pm.response.to.have.status(200));",
+            "pm.test('estado REGISTRADA', () => pm.expect(pm.response.json().estado).to.eql('REGISTRADA'));"
+          ]}}],
+          "response": []
+        },
+        {
+          "name": "3. POST Solicitud con DNI inexistente -> RECHAZADA (sin caerse)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dni\": \"{{dniInexistente}}\",\n  \"tipo\": \"MATRICULA\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "http://{{host}}:{{gatewayPort}}/api/v1/solicitudes",
+              "protocol": "http", "host": ["{{host}}"], "port": "{{gatewayPort}}",
+              "path": ["api", "v1", "solicitudes"]
+            },
+            "description": "Prueba el manejo de errores de solicitudes-service: no debe responder 500."
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('NO es 500', () => pm.expect(pm.response.code).to.not.eql(500));"
+          ]}}],
+          "response": []
+        },
+        {
+          "name": "4. GET Listar notificaciones",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://{{host}}:{{gatewayPort}}/api/v1/notificaciones",
+              "protocol": "http", "host": ["{{host}}"], "port": "{{gatewayPort}}",
+              "path": ["api", "v1", "notificaciones"]
+            },
+            "description": "Debe listar (al menos) la notificacion generada en el paso 2."
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('status 200', () => pm.response.to.have.status(200));",
+            "pm.test('hay al menos 1 notificacion', () => pm.expect(pm.response.json().length).to.be.at.least(1));"
+          ]}}],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2 · Extra — personas-service",
+      "item": [
+        {
+          "name": "GET Consultar DNI alterno",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://{{host}}:{{gatewayPort}}/api/v1/personas/{{dniAlterno}}",
+              "protocol": "http", "host": ["{{host}}"], "port": "{{gatewayPort}}",
+              "path": ["api", "v1", "personas", "{{dniAlterno}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET DNI inexistente (espera 404)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://{{host}}:{{gatewayPort}}/api/v1/personas/{{dniInexistente}}",
+              "protocol": "http", "host": ["{{host}}"], "port": "{{gatewayPort}}",
+              "path": ["api", "v1", "personas", "{{dniInexistente}}"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('status 404', () => pm.response.to.have.status(404));"
+          ]}}],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3 · Extra — solicitudes-service",
+      "item": [
+        {
+          "name": "GET Listar todas las solicitudes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://{{host}}:{{gatewayPort}}/api/v1/solicitudes",
+              "protocol": "http", "host": ["{{host}}"], "port": "{{gatewayPort}}",
+              "path": ["api", "v1", "solicitudes"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4 · Extra — notificaciones-service",
+      "item": [
+        {
+          "name": "POST Enviar notificacion manual",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"destino\": \"{{dni}}\",\n  \"mensaje\": \"Notificacion de prueba manual\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "http://{{host}}:{{gatewayPort}}/api/v1/notificaciones",
+              "protocol": "http", "host": ["{{host}}"], "port": "{{gatewayPort}}",
+              "path": ["api", "v1", "notificaciones"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5 · Verificar el candado (sin token)",
+      "item": [
+        {
+          "name": "GET Solicitudes SIN token (espera 401)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": {
+              "raw": "http://{{host}}:{{gatewayPort}}/api/v1/solicitudes",
+              "protocol": "http", "host": ["{{host}}"], "port": "{{gatewayPort}}",
+              "path": ["api", "v1", "solicitudes"]
+            },
+            "description": "A proposito sin Authorization: debe dar 401 siempre, confirmando que el JwtAuthFilter esta activo."
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('status 401 (el candado funciona)', () => pm.response.to.have.status(401));"
+          ]}}],
+          "response": []
+        }
+      ]
+    }
+  ]
+}
